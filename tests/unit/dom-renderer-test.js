@@ -2,17 +2,17 @@
 
 const { test } = QUnit;
 
-import DOMRenderer from 'mobiledoc-dom-renderer';
+import Renderer from 'mobiledoc-html-renderer';
 
 let renderer;
-QUnit.module('Unit: Mobiledoc DOM Renderer', {
+QUnit.module('Unit: Mobiledoc HTML Renderer', {
   beforeEach() {
-    renderer = new DOMRenderer();
+    renderer = new Renderer();
   }
 });
 
 test('it exists', (assert) => {
-  assert.ok(DOMRenderer, 'class exists');
+  assert.ok(Renderer, 'class exists');
   assert.ok(renderer, 'instance exists');
 });
 
@@ -24,8 +24,7 @@ test('renders an empty mobiledoc', (assert) => {
   let rendered = renderer.render(mobiledoc);
 
   assert.ok(rendered, 'renders output');
-  assert.equal(rendered.childNodes.length, 0,
-               'has no sections');
+  assert.equal(rendered, '<div></div>', 'output is empty');
 });
 
 test('renders a mobiledoc without markers', (assert) => {
@@ -38,12 +37,8 @@ test('renders a mobiledoc without markers', (assert) => {
     ]
   ];
   let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered.childNodes.length, 1,
-               'renders 1 section');
-  assert.equal(rendered.childNodes[0].tagName, 'P',
-               'renders a P');
-  assert.equal(rendered.childNodes[0].textContent, 'hello world',
-               'renders the text');
+  assert.equal(rendered,
+               '<div><p>hello world</p></div>');
 });
 
 test('renders a mobiledoc with simple (no attributes) marker', (assert) => {
@@ -58,11 +53,7 @@ test('renders a mobiledoc with simple (no attributes) marker', (assert) => {
     ]
   ];
   let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered.childNodes.length, 1,
-               'renders 1 section');
-  let sectionEl = rendered.childNodes[0];
-
-  assert.equal(sectionEl.innerHTML, '<b>hello world</b>');
+  assert.equal(rendered, '<div><p><b>hello world</b></p></div>');
 });
 
 test('renders a mobiledoc with complex (has attributes) marker', (assert) => {
@@ -77,11 +68,7 @@ test('renders a mobiledoc with complex (has attributes) marker', (assert) => {
     ]
   ];
   let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered.childNodes.length, 1,
-               'renders 1 section');
-  let sectionEl = rendered.childNodes[0];
-
-  assert.equal(sectionEl.innerHTML, '<a href="http://google.com">hello world</a>');
+  assert.equal(rendered, '<div><p><a href="http://google.com">hello world</a></p></div>');
 });
 
 test('renders a mobiledoc with multiple markups in a section', (assert) => {
@@ -100,9 +87,5 @@ test('renders a mobiledoc with multiple markups in a section', (assert) => {
     ]
   ];
   let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered.childNodes.length, 1,
-               'renders 1 section');
-  let sectionEl = rendered.childNodes[0];
-
-  assert.equal(sectionEl.innerHTML, '<b>hello <i>brave new </i>world</b>');
+  assert.equal(rendered, '<div><p><b>hello <i>brave new </i>world</b></p></div>');
 });
