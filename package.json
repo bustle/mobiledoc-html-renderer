@@ -1,6 +1,6 @@
 {
   "name": "mobiledoc-html-renderer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Renders mobiledoc input to HTML (string) output",
   "main": "dist/commonjs/mobiledoc-html-renderer/index.js",
   "scripts": {
