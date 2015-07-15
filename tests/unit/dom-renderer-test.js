@@ -101,3 +101,35 @@ test('renders a mobiledoc with multiple markups in a section', (assert) => {
   let rendered = renderer.render(mobiledoc);
   assert.equal(rendered, `<div><img src="${url}"></div>`);
 });
+
+test('renders a mobiledoc with card section and src in payload to image', (assert) => {
+  assert.expect(1);
+  let cardName = 'title-card';
+  let payload = {
+    src: 'bob.gif'
+  };
+  let mobiledoc = [
+    [],      // markers
+    [        // sections
+      [10, cardName, payload]
+    ]
+  ];
+  let rendered = renderer.render(mobiledoc);
+  assert.equal(rendered, '<div><img src="bob.gif"></div>');
+});
+
+test('renders a mobiledoc with card section and no src to nothing', (assert) => {
+  assert.expect(1);
+  let cardName = 'title-card';
+  let payload = {
+    name: 'bob'
+  };
+  let mobiledoc = [
+    [],      // markers
+    [        // sections
+      [10, cardName, payload]
+    ]
+  ];
+  let rendered = renderer.render(mobiledoc);
+  assert.equal(rendered, '<div><p></p></div>');
+});
