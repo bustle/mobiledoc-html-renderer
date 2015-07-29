@@ -158,3 +158,35 @@ test('renders a mobiledoc with card section and no src to nothing', (assert) => 
   let rendered = renderer.render(mobiledoc);
   assert.equal(rendered, '<div><p></p></div>');
 });
+
+test('renders a mobiledoc with card section that has been provided', (assert) => {
+  assert.expect(3);
+  let cardName = 'title-card';
+  let payload = {
+    name: 'bob'
+  };
+  let titleCard = {
+    name: cardName,
+    html: {
+      setup(buffer, options, env, setupPayload) {
+        assert.deepEqual(buffer, []);
+        assert.deepEqual(payload, setupPayload);
+        buffer.push('Howdy ');
+        buffer.push('friend');
+      }
+    }
+  };
+  let mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    sections: [
+      [],      // markers
+      [        // sections
+        [10, cardName, payload]
+      ]
+    ]
+  };
+  let rendered = renderer.render(mobiledoc, {
+    "title-card": titleCard
+  });
+  assert.equal(rendered, '<div><p>Howdy friend</p></div>');
+});
