@@ -1,7 +1,7 @@
 ## Mobiledoc HTML Renderer [![Build Status](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer.svg?branch=v0.1.0)](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer)
 
 This is a runtime renderer for the `mobiledoc` format.
-It renders mobiledoc to DOM elements.
+It renders mobiledoc to HTML elements.
 
 It is intended to be a small libraray that is run client-side in a browser that wants to display mobiledoc.
 
