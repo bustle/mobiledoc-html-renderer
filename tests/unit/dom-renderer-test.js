@@ -188,5 +188,25 @@ test('renders a mobiledoc with card section that has been provided', (assert) =>
   let rendered = renderer.render(mobiledoc, {
     "title-card": titleCard
   });
-  assert.equal(rendered, '<div><p>Howdy friend</p></div>');
+  assert.equal(rendered, '<div><div>Howdy friend</div></div>');
+});
+
+test('renders a mobiledoc with default image section', (assert) => {
+  assert.expect(1);
+  let cardName = 'image';
+  let payload = {
+    src: 'example.org/foo.jpg'
+  };
+  let mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    sections: [
+      [],      // markers
+      [        // sections
+        [10, cardName, payload]
+      ]
+    ]
+  };
+  let rendered = renderer.render(mobiledoc);
+
+  assert.equal(rendered, '<div><div><img src="example.org/foo.jpg"></div></div>');
 });
