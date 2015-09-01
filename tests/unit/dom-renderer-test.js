@@ -3,7 +3,7 @@
 const { test } = QUnit;
 
 import Renderer from 'mobiledoc-html-renderer';
-const MOBILEDOC_VERSION = '0.1';
+const MOBILEDOC_VERSION = '0.2.0';
 
 let renderer;
 QUnit.module('Unit: Mobiledoc HTML Renderer', {
@@ -209,4 +209,23 @@ test('renders a mobiledoc with default image section', (assert) => {
   let rendered = renderer.render(mobiledoc);
 
   assert.equal(rendered, '<div><div><img src="example.org/foo.jpg"></div></div>');
+});
+
+test('render mobiledoc with list section and list items', (assert) => {
+  const mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    sections: [
+      [],
+      [
+        [3, 'ul', [
+          [[[], 0, 'first item']],
+          [[[], 0, 'second item']]
+        ]]
+      ]
+    ]
+  };
+  const rendered = renderer.render(mobiledoc);
+  
+  assert.equal(rendered,
+               '<div><ul><li>first item</li><li>second item</li></ul></div>');
 });
