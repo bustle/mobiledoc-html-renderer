@@ -7,6 +7,9 @@
     "test": "testem ci",
     "build": "rm -rf dist/ && broccoli build dist"
   },
+  "ember-addon": {
+    "main": "ember-addon/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bustlelabs/mobiledoc-html-renderer"
@@ -14,7 +17,8 @@
   "keywords": [
     "mobiledoc",
     "render",
-    "content-kit"
+    "content-kit",
+    "ember-addon"
   ],
   "author": "Cory Forsyth <cory.forsyth@gmail.com> (http://coryforsyth.com/)",
   "license": "MIT",
@@ -33,5 +37,7 @@
     "broccoli-test-builder": "^0.2.0",
     "testem": "^0.9.0-1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "broccoli-funnel": "^1.0.0"
+  }
 }
