@@ -1,7 +1,7 @@
 ## Mobiledoc HTML Renderer [![Build Status](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer.svg?branch=v0.1.0)](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer)
 
-This is an HTML renderer for the [Mobiledoc](https://github.com/bustlelabs/content-kit-editor/blob/master/MOBILEDOC.md) format used
-by the [Content-Kit Editor](https://github.com/bustlelabs/content-kit-editor).
+This is an HTML renderer for the [Mobiledoc](https://github.com/bustlelabs/mobiledoc-kit/blob/master/MOBILEDOC.md) format used
+by [Mobiledoc-Kit](https://github.com/bustlelabs/mobiledoc-kit).
 
 The renderer is a small library intended for use in servers that are building
 HTML documents. It may be of limited use inside browsers as well.
