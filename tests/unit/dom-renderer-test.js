@@ -225,7 +225,44 @@ test('render mobiledoc with list section and list items', (assert) => {
     ]
   };
   const rendered = renderer.render(mobiledoc);
-  
+
   assert.equal(rendered,
                '<div><ul><li>first item</li><li>second item</li></ul></div>');
+});
+
+test('render mobiledoc with multiple spaces into &nbsp;s to preserve whitespace', (assert) => {
+  let space = ' ';
+  let repeat = (str, count) => {
+    let result = '';
+    while (count--) {
+      result += str;
+    }
+    return result;
+  };
+  let text = [
+    repeat(space, 4), 'some',
+    repeat(space, 5), 'text',
+    repeat(space, 6)
+  ].join('');
+  const mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    sections: [
+      [],
+      [
+        [1, 'p', [
+          [[], 0, text]
+        ]]
+      ]
+    ]
+  };
+  const rendered = renderer.render(mobiledoc);
+
+  let sn = ' &nbsp;';
+  let expectedText = [
+    repeat(sn, 2), 'some',
+    repeat(sn, 2), ' ', 'text',
+    repeat(sn, 3)
+  ].join('');
+  assert.equal(rendered,
+               `<div><p>${expectedText}</p></div>`);
 });

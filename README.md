@@ -1,4 +1,4 @@
-## Mobiledoc HTML Renderer [![Build Status](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer.svg?branch=v0.1.0)](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer)
+## Mobiledoc HTML Renderer [![Build Status](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer.svg?branch=master)](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer)
 
 This is an HTML renderer for the [Mobiledoc](https://github.com/bustlelabs/mobiledoc-kit/blob/master/MOBILEDOC.md) format used
 by [Mobiledoc-Kit](https://github.com/bustlelabs/mobiledoc-kit).
@@ -37,7 +37,14 @@ document.getElementById('output').appendChild(rendered);
 
 ### Tests
 
+Command-line:
+
  * `npm test`
+
+Or in the browser:
+
+ * `broccoli serve`
+ * visit http://localhost:4200/tests
 
 ### Releasing
 
