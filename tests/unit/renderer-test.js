@@ -266,3 +266,20 @@ test('render mobiledoc with multiple spaces into &nbsp;s to preserve whitespace'
   assert.equal(rendered,
                `<div><p>${expectedText}</p></div>`);
 });
+
+test('throws when given an unexpected mobiledoc version', (assert) => {
+  let mobiledoc = {
+    version: '0.1.0',
+    sections: [
+      [], []
+    ]
+  };
+  assert.throws(
+    () => renderer.render(mobiledoc),
+    /Unexpected Mobiledoc version.*0.1.0/);
+
+  mobiledoc.version = '0.2.1';
+  assert.throws(
+    () => renderer.render(mobiledoc),
+    /Unexpected Mobiledoc version.*0.2.1/);
+});
