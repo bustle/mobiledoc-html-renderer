@@ -4,6 +4,9 @@ const { test } = QUnit;
 
 import Renderer from 'mobiledoc-html-renderer';
 const MOBILEDOC_VERSION = '0.2.0';
+import ImageCard from 'mobiledoc-html-renderer/cards/image';
+
+const dataUri = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=";
 
 let renderer;
 QUnit.module('Unit: Mobiledoc HTML Renderer', {
@@ -17,6 +20,76 @@ test('it exists', (assert) => {
   assert.ok(renderer, 'instance exists');
 });
 
+test('throws when given invalid card type', (assert) => {
+  let card = {
+    name: 'bad',
+    type: 'other',
+    render() {}
+  };
+  assert.throws(
+    () => { new Renderer({cards:[card]}) }, // jshint ignore:line
+    /Card "bad" must be of type "html"/);
+});
+
+test('throws when given card without `render`', (assert) => {
+  let card = {
+    name: 'bad',
+    type: 'html',
+    render: undefined
+  };
+  assert.throws(
+    () => { new Renderer({cards:[card]}) }, // jshint ignore:line
+    /Card "bad" must define.*render/);
+});
+
+test('throws if card renders invalid response', (assert) => {
+  let card = {
+    name: 'bad',
+    type: 'html',
+    render() {
+      return Object.create(null);
+    }
+  };
+  let mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    sections: [
+      [], // markers
+      [[10, card.name]]  // sections
+    ]
+  };
+  renderer = new Renderer({cards: [card]});
+  assert.throws(
+    () => renderer.render(mobiledoc),
+    /Card "bad" must render html/
+  );
+});
+
+test('teardown hook calls registered teardown methods', (assert) => {
+  let didTeardown;
+  let card = {
+    name: 'hasteardown',
+    type: 'html',
+    render({env}) {
+      env.onTeardown(() => didTeardown = true);
+    }
+  };
+  let mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    sections: [
+      [], // markers
+      [[10, card.name]]  // sections
+    ]
+  };
+  renderer = new Renderer({cards: [card]});
+  let { teardown } = renderer.render(mobiledoc);
+
+  assert.ok(!didTeardown, 'precond - no teardown yet');
+
+  teardown();
+
+  assert.ok(didTeardown, 'teardown hook called');
+});
+
 test('renders an empty mobiledoc', (assert) => {
   let mobiledoc = {
     version: MOBILEDOC_VERSION,
@@ -25,7 +98,7 @@ test('renders an empty mobiledoc', (assert) => {
       []  // sections
     ]
   };
-  let rendered = renderer.render(mobiledoc);
+  let { result: rendered } = renderer.render(mobiledoc);
 
   assert.ok(rendered, 'renders output');
   assert.equal(rendered, '<div></div>', 'output is empty');
@@ -43,7 +116,7 @@ test('renders a mobiledoc without markers', (assert) => {
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
+  let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered,
                '<div><p>hello world</p></div>');
 });
@@ -62,7 +135,7 @@ test('renders a mobiledoc with simple (no attributes) marker', (assert) => {
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
+  let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered, '<div><p><b>hello world</b></p></div>');
 });
 
@@ -80,7 +153,7 @@ test('renders a mobiledoc with complex (has attributes) marker', (assert) => {
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
+  let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered, '<div><p><a href="http://google.com">hello world</a></p></div>');
 });
 
@@ -102,78 +175,87 @@ test('renders a mobiledoc with multiple markups in a section', (assert) => {
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
+  let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered, '<div><p><b>hello <i>brave new </i>world</b></p></div>');
 });
 
-test('renders a mobiledoc with multiple markups in a section', (assert) => {
-  let url = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=";
+test('renders a mobiledoc with img section', (assert) => {
   let mobiledoc = {
     version: MOBILEDOC_VERSION,
     sections: [
       [],      // markers
       [        // sections
-        [2, url]
+        [2, dataUri]
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered, `<div><img src="${url}"></div>`);
+  let { result: rendered } = renderer.render(mobiledoc);
+  assert.equal(rendered, `<div><img src="${dataUri}"></div>`);
 });
 
-test('renders a mobiledoc with card section and src in payload to image', (assert) => {
-  assert.expect(1);
-  let cardName = 'title-card';
-  let payload = {
-    src: 'bob.gif'
-  };
+test('renders unknown card with unknownCardHandler', (assert) => {
+  assert.expect(5);
+
+  let cardName = 'missing-card';
+  let expectedPayload = {};
+  let cardOptions = {};
   let mobiledoc = {
     version: MOBILEDOC_VERSION,
     sections: [
       [],      // markers
       [        // sections
-        [10, cardName, payload]
+        [10, cardName, expectedPayload]
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered, '<div><img src="bob.gif"></div>');
+  let unknownCardHandler = ({env, payload, options}) => {
+    assert.equal(env.name, cardName, 'correct name');
+    assert.ok(!env.isInEditor, 'correct isInEditor');
+    assert.ok(!!env.onTeardown, 'onTeardown hook exists');
+
+    assert.deepEqual(payload, expectedPayload, 'correct payload');
+    assert.deepEqual(options, cardOptions, 'correct options');
+  };
+  renderer = new Renderer({cards: [], unknownCardHandler, cardOptions});
+  renderer.render(mobiledoc);
 });
 
-test('renders a mobiledoc with card section and no src to nothing', (assert) => {
-  assert.expect(1);
-  let cardName = 'title-card';
-  let payload = {
-    name: 'bob'
-  };
+test('throws when encountering unknown card and no unknownCardHandler', (assert) => {
+  let cardName = 'missing-card';
   let mobiledoc = {
     version: MOBILEDOC_VERSION,
     sections: [
       [],      // markers
       [        // sections
-        [10, cardName, payload]
+        [10, cardName]
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
-  assert.equal(rendered, '<div><p></p></div>');
+  renderer = new Renderer({cards: [], unknownCardHandler: undefined});
+
+  assert.throws(
+    () => renderer.render(mobiledoc),
+    /Card "missing-card" not found.*no unknownCardHandler/
+  );
 });
 
-test('renders a mobiledoc with card section that has been provided', (assert) => {
-  assert.expect(3);
+test('renders a mobiledoc with a card', (assert) => {
+  assert.expect(6);
+
   let cardName = 'title-card';
-  let payload = {
-    name: 'bob'
-  };
+  let expectedPayload = {};
+  let expectedOptions = {};
   let titleCard = {
     name: cardName,
-    html: {
-      setup(buffer, options, env, setupPayload) {
-        assert.deepEqual(buffer, []);
-        assert.deepEqual(payload, setupPayload);
-        buffer.push('Howdy ');
-        buffer.push('friend');
-      }
+    type: 'html',
+    render: ({env, payload, options}) => {
+      assert.deepEqual(payload, expectedPayload, 'correct payload');
+      assert.deepEqual(options, expectedOptions, 'correct options');
+      assert.equal(env.name, cardName, 'correct name');
+      assert.ok(!env.isInEditor, 'isInEditor correct');
+      assert.ok(!!env.onTeardown, 'has onTeardown hook');
+
+      return 'Howdy friend';
     }
   };
   let mobiledoc = {
@@ -181,22 +263,19 @@ test('renders a mobiledoc with card section that has been provided', (assert) =>
     sections: [
       [],      // markers
       [        // sections
-        [10, cardName, payload]
+        [10, cardName, expectedPayload]
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc, {
-    "title-card": titleCard
-  });
+  renderer = new Renderer({cards: [titleCard], cardOptions: expectedOptions});
+  let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered, '<div><div>Howdy friend</div></div>');
 });
 
-test('renders a mobiledoc with default image section', (assert) => {
+test('renders a mobiledoc with built-in image card', (assert) => {
   assert.expect(1);
-  let cardName = 'image';
-  let payload = {
-    src: 'example.org/foo.jpg'
-  };
+  let cardName = ImageCard.name;
+  let payload = { src: dataUri };
   let mobiledoc = {
     version: MOBILEDOC_VERSION,
     sections: [
@@ -206,9 +285,9 @@ test('renders a mobiledoc with default image section', (assert) => {
       ]
     ]
   };
-  let rendered = renderer.render(mobiledoc);
+  let { result: rendered } = renderer.render(mobiledoc);
 
-  assert.equal(rendered, '<div><div><img src="example.org/foo.jpg"></div></div>');
+  assert.equal(rendered, `<div><div><img src="${dataUri}"></div></div>`);
 });
 
 test('render mobiledoc with list section and list items', (assert) => {
@@ -224,7 +303,7 @@ test('render mobiledoc with list section and list items', (assert) => {
       ]
     ]
   };
-  const rendered = renderer.render(mobiledoc);
+  const { result: rendered } = renderer.render(mobiledoc);
 
   assert.equal(rendered,
                '<div><ul><li>first item</li><li>second item</li></ul></div>');
@@ -255,7 +334,7 @@ test('render mobiledoc with multiple spaces into &nbsp;s to preserve whitespace'
       ]
     ]
   };
-  const rendered = renderer.render(mobiledoc);
+  const { result: rendered } = renderer.render(mobiledoc);
 
   let sn = ' &nbsp;';
   let expectedText = [
