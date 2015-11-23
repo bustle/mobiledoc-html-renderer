@@ -10,7 +10,7 @@ HTML documents. It may be of limited use inside browsers as well.
 
 ```
 var mobiledoc = {
-  version: "0.1",
+  version: "0.2.0",
   sections: [
     [         // markers
       ['B']
@@ -27,12 +27,9 @@ var mobiledoc = {
     ]
   ]
 };
-var renderer = new HTMLRenderer();
-var cards = {};
-var rendered = renderer.render(mobiledoc, cards);
-document.getElementById('output').appendChild(rendered);
-// renders <div><p><b>hello world</b></b></div>
-// into 'output' element
+var renderer = new HTMLRenderer({cards: []});
+var rendered = renderer.render(mobiledoc);
+console.log(rendererd.result); // "<div><p><b>hello world</b></p></div>"
 ```
 
 ### Tests
