@@ -1,6 +1,6 @@
 ## Mobiledoc HTML Renderer [![Build Status](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer.svg?branch=master)](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer)
 
-This is an HTML renderer for the [Mobiledoc](https://github.com/bustlelabs/mobiledoc-kit/blob/master/MOBILEDOC.md) format used
+This is an HTML renderer for the [Mobiledoc format](https://github.com/bustlelabs/mobiledoc-kit/blob/master/MOBILEDOC.md) used
 by [Mobiledoc-Kit](https://github.com/bustlelabs/mobiledoc-kit).
 
 To learn more about Mobiledoc cards and renderers, see the **[Mobiledoc Cards docs](https://github.com/bustlelabs/mobiledoc-kit/blob/master/CARDS.md)**.
@@ -39,7 +39,7 @@ The Renderer constructor accepts a single object with the following optional pro
   * `unknownCardHandler` [function] - Will be called when any unknown card is enountered
 
 The return value from `renderer.render(mobiledoc)` is an object with two properties:
-  * `result` [DOM Node] - The rendered result
+  * `result` [string] - The rendered result
   * `teardown` [function] - When called, this function will tear down the rendered mobiledoc and call any teardown handlers that were registered by cards when they were rendered
 
 ### Tests
