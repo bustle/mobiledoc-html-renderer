@@ -1,5 +1,7 @@
 /* global QUnit */
-
+import {
+  createElement
+} from 'mobiledoc-html-renderer/utils/dom';
 import Renderer from 'mobiledoc-html-renderer';
 import ImageCard from 'mobiledoc-html-renderer/cards/image';
 import {
@@ -305,7 +307,7 @@ test('rendering nested mobiledocs in cards', (assert) => {
     ]
   };
 
-  let renderer = new Renderer({cards});
+  renderer = new Renderer({cards});
   let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered, '<div><div><div><p>hello world</p></div></div></div>');
 });
@@ -648,4 +650,33 @@ test('rendering unknown atom uses unknownAtomHandler', (assert) => {
   };
   renderer = new Renderer({atoms: [], unknownAtomHandler, cardOptions});
   renderer.render(mobiledoc);
+});
+
+test('renders a mobiledoc with sectionElementRenderer', (assert) => {
+  let mobiledoc = {
+    version: MOBILEDOC_VERSION,
+    atoms: [],
+    cards: [],
+    markups: [],
+    sections: [
+      [MARKUP_SECTION_TYPE, 'P', [
+        [MARKUP_MARKER_TYPE, [], 0, 'hello world']]
+      ],
+      [MARKUP_SECTION_TYPE, 'p', [
+        [MARKUP_MARKER_TYPE, [], 0, 'hello world']]
+      ],
+      [MARKUP_SECTION_TYPE, 'h1', [
+        [MARKUP_MARKER_TYPE, [], 0, 'hello world']]
+      ]
+    ]
+  };
+  renderer = new Renderer({
+    sectionElementRenderer: {
+      p: () => createElement('pre'),
+      H1: () => createElement('h2')
+    }
+  });
+  let renderResult = renderer.render(mobiledoc);
+  let { result: rendered } = renderResult;
+  assert.equal(rendered, '<div><pre>hello world</pre><pre>hello world</pre><h2>hello world</h2></div>');
 });
