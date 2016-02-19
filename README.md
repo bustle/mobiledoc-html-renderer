@@ -1,6 +1,6 @@
 ## Mobiledoc HTML Renderer [![Build Status](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer.svg?branch=master)](https://travis-ci.org/bustlelabs/mobiledoc-html-renderer)
 
-**This package is deprecated and will not be updated. Please see [Rendering HTML](https://github.com/bustlelabs/mobiledoc-dom-renderer#rendering-html) on the mobiledoc-dom-renderer README.md` for a supported path to render Mobiledoc as HTML.**
+**This package is deprecated and will not be updated. Please see [Rendering HTML](https://github.com/bustlelabs/mobiledoc-dom-renderer#rendering-html) on the mobiledoc-dom-renderer `README.md` for a supported path to render Mobiledoc as HTML.**
 
 This is an HTML renderer for the [Mobiledoc format](https://github.com/bustlelabs/mobiledoc-kit/blob/master/MOBILEDOC.md) used
 by [Mobiledoc-Kit](https://github.com/bustlelabs/mobiledoc-kit).
