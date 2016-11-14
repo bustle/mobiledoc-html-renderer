@@ -18,6 +18,7 @@ import {
 
 const { test, module } = QUnit;
 const MOBILEDOC_VERSION = '0.3.0';
+const MOBILEDOC_VERSION_0_3_1 = '0.3.1';
 const dataUri = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=";
 
 let renderer;
@@ -56,6 +57,23 @@ test('renders a mobiledoc without markups', (assert) => {
   let { result: rendered } = renderer.render(mobiledoc);
   assert.equal(rendered,
                '<div><p>hello world</p></div>');
+});
+
+test('renders a mobiledoc with aside without markups', (assert) => {
+  let mobiledoc = {
+    version: MOBILEDOC_VERSION_0_3_1,
+    atoms: [],
+    cards: [],
+    markups: [],
+    sections: [
+      [MARKUP_SECTION_TYPE, 'ASIDE', [
+        [MARKUP_MARKER_TYPE, [], 0, 'hello world']]
+      ]
+    ]
+  };
+  let { result: rendered } = renderer.render(mobiledoc);
+  assert.equal(rendered,
+               '<div><aside>hello world</aside></div>');
 });
 
 test('renders a mobiledoc with simple (no attributes) markup', (assert) => {
